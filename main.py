@@ -13,7 +13,10 @@ class MapWindow(QMainWindow):
         loadUi("main_window.ui", self)
 
         self.search_button.clicked.connect(self.search_map)
+
         self.z = None
+        self.x = None
+        self.y = None
 
     def update_map(self, x, y, size):
         try:
@@ -51,6 +54,27 @@ class MapWindow(QMainWindow):
             if self.z is not None:
                 self.z = max(self.z - 1, 1)
                 print('Уменьшаем масштаб')
+                self.update_map(self.x, self.y, self.z)
+
+        elif event.key() == Qt.Key.Key_Up:
+            if self.y is not None:
+                self.y = min(self.y + 1, 90)
+                print('Перемещяем вверх')
+                self.update_map(self.x, self.y, self.z)
+        elif event.key() == Qt.Key.Key_Down:
+            if self.y is not None:
+                self.y = max(self.y - 1, -90)
+                print('Перемещяем вниз')
+                self.update_map(self.x, self.y, self.z)
+        elif event.key() == Qt.Key.Key_Left:
+            if self.x is not None:
+                self.x = max(self.x - 1, -180)
+                print('Перемещяем влево')
+                self.update_map(self.x, self.y, self.z)
+        elif event.key() == Qt.Key.Key_Right:
+            if self.x is not None:
+                self.x = min(self.x + 1, 180)
+                print('Перемещяем вправо')
                 self.update_map(self.x, self.y, self.z)
 
 
