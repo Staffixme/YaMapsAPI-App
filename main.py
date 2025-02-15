@@ -5,7 +5,7 @@ from PyQt6.uic import loadUi
 from PyQt6.QtGui import QPixmap
 import requests
 
-
+# Задача 4
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
