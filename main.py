@@ -11,7 +11,11 @@ class MapWindow(QMainWindow):
         super().__init__()
         self.apikey = "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13"
         loadUi("main_window.ui", self)
-        self.search_button.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
+        self.go_button.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
+                                                                   float(self.line_y.text()),
+                                                                   int(self.line_z.text())))
+
+        self.dark_theme.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
                                                                    float(self.line_y.text()),
                                                                    int(self.line_z.text())))
 
@@ -24,9 +28,14 @@ class MapWindow(QMainWindow):
     def update_map(self, x, y, size):
         try:
             self.x, self.y, self.z = x, y, size
+            if self.dark_theme.isChecked():
+                mode = "dark"
+            else:
+                mode = "light"
+
             link = (f"https://static-maps.yandex.ru/v1?lang=ru_RU&ll={x},{y}"
-                    f"&z={size}&apikey={self.apikey}")
-            print(f"Запрос: {x}, {y}, {size}")
+                    f"&z={size}&theme={mode}&apikey={self.apikey}")
+            print(self.line_x.text(), self.line_y.text(), self.line_z.text())
             result = requests.get(link)
             content = result.content
             status = result.status_code

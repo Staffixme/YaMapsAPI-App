@@ -14,7 +14,7 @@
    <string>Maps API</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="4,0,0">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,4,0,0">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -30,6 +30,44 @@
     <property name="bottomMargin">
      <number>52</number>
     </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="dark_theme">
+          <property name="text">
+           <string>Темная тема карты</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="search_button">
+          <property name="text">
+           <string>Искать</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
     <item>
      <widget class="QLabel" name="map">
       <property name="autoFillBackground">
@@ -104,9 +142,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="search_button">
+       <widget class="QPushButton" name="go_button">
         <property name="text">
-         <string>Найти</string>
+         <string>Перейти</string>
         </property>
        </widget>
       </item>
