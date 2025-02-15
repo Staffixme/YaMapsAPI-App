@@ -5,25 +5,44 @@ from PyQt6.uic import loadUi
 from PyQt6.QtGui import QPixmap
 import requests
 
-# Задача 4
+
+# Задача 5
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.apikey = "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13"
+        self.static_apikey = "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13"
+        self.geocode_apikey = "8013b162-6b42-4997-9691-77b7074026e0"
         loadUi("main_window.ui", self)
         self.go_button.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
-                                                                   float(self.line_y.text()),
-                                                                   int(self.line_z.text())))
+                                                               float(self.line_y.text()),
+                                                               int(self.line_z.text())))
 
-        self.dark_theme.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
-                                                                   float(self.line_y.text()),
-                                                                   int(self.line_z.text())))
+        self.dark_theme.clicked.connect(lambda: self.update_map(self.x, self.y, self.z))
+
+        self.search_button.clicked.connect(lambda: self.find_place(self.lineEdit.text()))
 
         self.z = None
         self.x = None
         self.y = None
 
         self.update_map(32, 32, 3)
+
+    def find_place(self, text):
+        try:
+            address = "+".join(text.split())
+            link = f"https://geocode-maps.yandex.ru/1.x/?apikey={self.geocode_apikey}&geocode={address}&format=json"
+            print(link)
+            result = requests.get(link)
+            content = result.json()
+            status = result.status_code
+            if status == 200:
+                pos = content["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
+                position = [float(i) for i in pos.split()]
+                self.update_map(*position, 10)
+            else:
+                print(status, "Что-то пошло не так:", result.reason)
+        except Exception as e:
+            print("Получено исключение:", e)
 
     def update_map(self, x, y, size):
         try:
@@ -34,7 +53,7 @@ class MapWindow(QMainWindow):
                 mode = "light"
 
             link = (f"https://static-maps.yandex.ru/v1?lang=ru_RU&ll={x},{y}"
-                    f"&z={size}&theme={mode}&apikey={self.apikey}")
+                    f"&z={size}&theme={mode}&apikey={self.static_apikey}")
             print(self.line_x.text(), self.line_y.text(), self.line_z.text())
             result = requests.get(link)
             content = result.content
@@ -81,6 +100,10 @@ class MapWindow(QMainWindow):
                 self.x = min(self.x + 10, 180)
                 print('Перемещяем вправо')
                 self.update_map(self.x, self.y, self.z)
+
+        elif event.key() in (Qt.Key.Key_Enter, 16777220):
+            print("Поиск места")
+            self.find_place(self.lineEdit.text())
 
 
 if __name__ == "__main__":
