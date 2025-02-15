@@ -19,6 +19,8 @@ class MapWindow(QMainWindow):
         self.x = None
         self.y = None
 
+        self.update_map(32, 32, 3)
+
     def update_map(self, x, y, size):
         try:
             self.x, self.y, self.z = x, y, size
