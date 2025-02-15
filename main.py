@@ -15,12 +15,13 @@ class MapWindow(QMainWindow):
         loadUi("main_window.ui", self)
         self.go_button.clicked.connect(lambda: self.update_map(float(self.line_x.text()),
                                                                float(self.line_y.text()),
-                                                               int(self.line_z.text())))
+                                                               int(self.line_z.text()), False))
 
         self.dark_theme.clicked.connect(lambda: self.update_map(self.x, self.y, self.z))
 
         self.search_button.clicked.connect(lambda: self.find_place(self.lineEdit.text()))
 
+        self.is_point_active = False
         self.z = None
         self.x = None
         self.y = None
@@ -38,22 +39,30 @@ class MapWindow(QMainWindow):
             if status == 200:
                 pos = content["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
                 position = [float(i) for i in pos.split()]
-                self.update_map(*position, 10)
+                self.update_map(*position, 10, True)
             else:
                 print(status, "Что-то пошло не так:", result.reason)
         except Exception as e:
             print("Получено исключение:", e)
 
-    def update_map(self, x, y, size):
+    def update_map(self, x, y, size, point=None):
         try:
+            if point:
+                self.is_point_active = point
+
             self.x, self.y, self.z = x, y, size
             if self.dark_theme.isChecked():
                 mode = "dark"
             else:
                 mode = "light"
 
+            if self.is_point_active:
+                pt = f"&pt={x},{y},comma"
+            else:
+                pt = ""
+
             link = (f"https://static-maps.yandex.ru/v1?lang=ru_RU&ll={x},{y}"
-                    f"&z={size}&theme={mode}&apikey={self.static_apikey}")
+                    f"&z={size}&theme={mode}{pt}&apikey={self.static_apikey}")
             print(self.line_x.text(), self.line_y.text(), self.line_z.text())
             result = requests.get(link)
             content = result.content
@@ -82,22 +91,22 @@ class MapWindow(QMainWindow):
 
         elif event.key() == Qt.Key.Key_Up:
             if self.y is not None:
-                self.y = min(self.y + 10, 90)
+                self.y = min(self.y + 5, 90)
                 print('Перемещяем вверх')
                 self.update_map(self.x, self.y, self.z)
         elif event.key() == Qt.Key.Key_Down:
             if self.y is not None:
-                self.y = max(self.y - 10, -90)
+                self.y = max(self.y - 5, -90)
                 print('Перемещяем вниз')
                 self.update_map(self.x, self.y, self.z)
         elif event.key() == Qt.Key.Key_Left:
             if self.x is not None:
-                self.x = max(self.x - 10, -180)
+                self.x = max(self.x - 5, -180)
                 print('Перемещяем влево')
                 self.update_map(self.x, self.y, self.z)
         elif event.key() == Qt.Key.Key_Right:
             if self.x is not None:
-                self.x = min(self.x + 10, 180)
+                self.x = min(self.x + 5, 180)
                 print('Перемещяем вправо')
                 self.update_map(self.x, self.y, self.z)
 
