@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit
 from PyQt6.uic import loadUi
 from PyQt6.QtGui import QPixmap
 import requests
@@ -21,6 +21,7 @@ class MapWindow(QMainWindow):
 
     def update_map(self, x, y, size):
         try:
+            self.x, self.y, self.z = x, y, size
             link = (f"https://static-maps.yandex.ru/v1?lang=ru_RU&ll={x},{y}"
                     f"&z={size}&apikey={self.apikey}")
             print(f"Запрос: {x}, {y}, {size}")
@@ -36,16 +37,16 @@ class MapWindow(QMainWindow):
         except Exception as e:
             print("Получено исключение:", e)
 
-
     def keyPressEvent(self, event):
+        self.line_z.clearFocus()
         if event.key() == Qt.Key.Key_PageUp:
             if self.z is not None:
-                self.z = min(self.z + 10, 17)
+                self.z = min(self.z + 1, 21)
                 print('Увеличиваем масштаб')
                 self.update_map(self.x, self.y, self.z)
         elif event.key() == Qt.Key.Key_PageDown:
             if self.z is not None:
-                self.z = max(self.z - 10, 1)
+                self.z = max(self.z - 1, 1)
                 print('Уменьшаем масштаб')
                 self.update_map(self.x, self.y, self.z)
 
